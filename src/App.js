@@ -2,29 +2,24 @@ import React, { useState, useEffect } from "react";
 import socketIOClient from "socket.io-client";
 
 function App() {
-  const [ip, setip] = useState("");
-  const [port, setport] = useState("");
-  const [pingInterval, setpingInterval] = useState(10000);
+  const [ip, setip] = useState("192.168.43.195");
+  const [port, setport] = useState("55555");
+  const [pingInterval, setpingInterval] = useState(2000);
   const [response, setresponse] = useState([])
-  const [flag, setflag] = useState(false)
 
-  useEffect(() => {
-    if (flag) {
-      const socket = socketIOClient(`http://${ip}:${port}`);
-      let interval = setInterval(() =>
-        socket.emit('client', { port: port }, function (data) {
-          setresponse([...response,data])
-        }), pingInterval);
-
-      return () => {
-        clearInterval(interval);
-      };
-    }
-  }, [flag,response]);
 
   const handleSentEvent = () => {
     console.log("in socket")
-    setflag(true)
+    const socket = socketIOClient(`http://${ip}:${port}`);
+    // let interval = setInterval(() => {
+      socket.emit('client', "data", function (data) {
+        console.log(data)
+      })
+    // }
+    //   , pingInterval);
+    socket.on("data", data => {
+      console.log(data.toString()); // print out data
+    });
   }
 
   return (
